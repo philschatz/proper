@@ -185,6 +185,12 @@
     { title: 'Indent',        command: 'indent',  shortcut: 'tab' },
     { title: 'Outdent',       command: 'outdent', shortcut: 'shift+tab' },
   ];
+
+  var allowedTags = {
+    p: [], ul: [], ol: [], li: [],
+    strong: [], code: [], em: [], b: [], i: [], a: ['href']
+  };
+
       
   // Proper
   // ------
@@ -405,7 +411,7 @@
       replace('div', 'p');
       //replace('span', 'span');
       
-      node.find('span').each(function () {
+      node.find('span:not([class])').each(function () {
         if (this.firstChild) {
           $(this.firstChild).unwrap();
         }
@@ -460,7 +466,7 @@
       });
       
       // Remove all spans
-      node.find('span').each(function () {
+      node.find('span:not([class])').each(function () {
         $(this).children().first().unwrap();
       });
     }
@@ -608,11 +614,6 @@
     }
     
     function cleanPastedContent (node) {
-      var allowedTags = {
-        p: [], ul: [], ol: [], li: [],
-        strong: [], code: [], em: [], b: [], i: [], a: ['href']
-      };
-      
       function traverse (node) {
         // Remove comments
         $(node).contents().filter(function () {
@@ -629,6 +630,8 @@
             _.each(allowedTags[tag], function (name) {
               neww.attr(name, old.attr(name));
             });
+            // Copy over the class if it has one
+            neww.attr('class', old.attr('class'));
             old.replaceWith(neww);
           } else if (tag === 'font' && $(this).hasClass('proper-code')) {
             // do nothing
