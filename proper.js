@@ -175,19 +175,17 @@
   // Initial Setup
   // -------------
 
-  controlsTpl = ' \
-    <div class="proper-commands"> \
-      <a href="#" title="Emphasis (CTRL+SHIFT+E)" class="command em" command="em"><div>Emphasis</div></a> \
-      <a href="#" title="Strong (CTRL+SHIFT+S)" class="command strong" command="strong"><div>Strong</div></a> \
-      <a href="#" title="Inline Code (CTRL+SHIFT+C)" class="command code" command="code"><div>Code</div></a> \
-      <a title="Link (CTRL+SHIFT+L)" href="#" class="command link" command="link"><div>Link</div></a>\
-      <a href="#" title="Bullet List (CTRL+SHIFT+B)" class="command ul" command="ul"><div>Bullets List</div></a>\
-      <a href="#" title="Numbered List (CTRL+SHIFT+N)" class="command ol" command="ol"><div>Numbered List</div></a>\
-      <a href="#" title="Indent (TAB)" class="command indent" command="indent"><div>Indent</div></a>\
-      <a href="#" title="Outdent (SHIFT+TAB)" class="command outdent" command="outdent"><div>Outdent</div></a>\
-      <br class="clear"/>\
-    </div>';
-  
+  var defaultControls = [
+    { title: 'Emphasis',      command: 'em',      shortcut: 'ctrl+shift+e' },
+    { title: 'Strong',        command: 'strong',  shortcut: 'ctrl+shift+s' },
+    { title: 'Inline Code',   command: 'code',    shortcut: 'ctrl+shift+c' },
+    { title: 'Link',          command: 'link',    shortcut: 'ctrl+shift+l' },
+    { title: 'Bullet List',   command: 'ul',      shortcut: 'ctrl+shift+b' },
+    { title: 'Numbered List', command: 'ol',      shortcut: 'ctrl+shift+n' },
+    { title: 'Indent',        command: 'indent',  shortcut: 'tab' },
+    { title: 'Outdent',       command: 'outdent', shortcut: 'shift+tab' },
+  ];
+      
   // Proper
   // ------
   
@@ -203,6 +201,7 @@
           markup: true,
           placeholder: 'Enter Text',
           startEmpty: false,
+          controls: defaultControls,
           codeFontFamily: 'Monaco, Consolas, "Lucida Console", monospace'
         },
         Node = window.Node || { // not available in IE
@@ -345,6 +344,9 @@
       }
     };
     
+    // Add custom commands
+    _.extend(commands, options.commands);
+    
     // Returns true if a and b is the same font family. This is used to check
     // if the current font family (`document.queryCommandValue('fontName')`)
     // is the font family that's used to style code.
@@ -460,28 +462,6 @@
       // Remove all spans
       node.find('span').each(function () {
         $(this).children().first().unwrap();
-      });
-    }
-    
-    // Replaces semantic elements with their presentational counterparts
-    // (e.g. <em> with <i>).
-    function desemantifyContents(node) {
-      doWithSelection(function () {
-        function replace(semantic, presentational) {
-          node.find(semantic).each(function () {
-            var presentationalEl = $(presentational).get(0);
-            
-            var child;
-            while (child = this.firstChild) {
-              presentationalEl.appendChild(child);
-            }
-            
-            $(this).replaceWith(presentationalEl);
-          });
-        }
-        replace('em', '<i />');
-        replace('strong', '<b />');
-        replace('code', '<font class="proper-code" face="'+escape(options.codeFontFamily)+'" />');
       });
     }
     
@@ -693,8 +673,7 @@
           restoreSelection(selection);
           $(el).focus();
           cleanPastedContent($(node));
-          //semantifyContents($(node));
-          desemantifyContents($(node));
+          semantifyContents($(node));
           if (isAnnotationActive) removeAnnotations($(node));
           // For some reason last </p> gets injected anyway
           document.execCommand('insertHTML', false, $(node).html());
@@ -788,29 +767,27 @@
       activeElement = el;
       bindEvents(el);
       
-      // Setup controls
       if (options.markup) {
-        $controls = $(controlsTpl); 
+        // Setup controls
+        $controls = $('<div class="proper-commands"/>');
+        _.each(options.controls, function(cmd) {
+          $('<a href="#" title="' + cmd.title + ' (' + cmd.shortcut + ')" class="command ' + cmd.command + '" command="' + cmd.command + '"><div>' + cmd.title + '</div></a>').appendTo($controls);
+        });
+        $('<br class="clear"/>').appendTo($controls);
+    
         $controls.appendTo($(options.controlsTarget));
-      }
       
-      // Keyboard bindings
-      if (options.markup) {
+        // Keyboard bindings
         function execLater(cmd) {
           return function(e) {
             e.preventDefault();
             exec(cmd);
           };
         }
-        $(activeElement)
-          .keydown('ctrl+shift+e', execLater('em'))
-          .keydown('ctrl+shift+s', execLater('strong'))
-          .keydown('ctrl+shift+c', execLater('code'))
-          .keydown('ctrl+shift+l', execLater('link'))
-          .keydown('ctrl+shift+b', execLater('ul'))
-          .keydown('ctrl+shift+n', execLater('ol'))
-          .keydown('tab',          execLater('indent'))
-          .keydown('shift+tab',    execLater('outdent'));
+        var $activeElement = $(activeElement);
+        _.each(options.controls, function(cmd) {
+          $activeElement.keydown(cmd.shortcut, execLater(cmd.command));
+        });
       }
       
       if (!options.startEmpty) 
@@ -819,7 +796,7 @@
         maybeInsertPlaceholder();
       
       updateCommandState();
-      desemantifyContents($(activeElement));
+      semantifyContents($(activeElement));
       
       // Use <b>, <i> and <font face="monospace"> instead of style attributes.
       // This is convenient because these inline element can easily be replaced
