@@ -187,7 +187,7 @@
   ];
 
   var allowedTags = {
-    p: [], ul: [], ol: [], li: [],
+    p: [], ul: [], ol: ['start'], li: [],
     strong: [], code: [], em: [], b: [], i: [], a: ['href']
   };
 
@@ -201,7 +201,6 @@
         direction = "left",
         events = _.extend({}, _.Events),
         pendingChange = false,
-        options = {},
         defaultOptions = { // default options
           multiline: true,
           markup: true,
@@ -215,6 +214,7 @@
           COMMENT_NODE: 8
         };
     
+    options = options == null ? {} : options;
     
     // Commands
     // --------
@@ -249,7 +249,8 @@
 
     var nbsp = $('<span>&nbsp;</span>').text();
 
-    var commands = {
+    var commands = {};
+    var defaultCommands = {
       em: {
         isActive: function() {
           return document.queryCommandState('italic', false, true);
@@ -351,6 +352,7 @@
     };
     
     // Add custom commands
+    _.extend(commands, defaultCommands);
     _.extend(commands, options.commands);
     
     // Returns true if a and b is the same font family. This is used to check
@@ -850,6 +852,9 @@
       bind:    function () { events.bind.apply(events, arguments); },
       unbind:  function () { events.unbind.apply(events, arguments); },
       trigger: function () { events.trigger.apply(events, arguments); },
+      
+      defaultControls: defaultControls,
+      defaultCommands: defaultCommands,
       
       activate: activate,
       deactivate: deactivate,
