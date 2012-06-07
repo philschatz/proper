@@ -354,6 +354,7 @@
     // Add custom commands
     _.extend(commands, defaultCommands);
     _.extend(commands, options.commands);
+    _.extend(allowedTags, options.allowedTags);
     
     // Returns true if a and b is the same font family. This is used to check
     // if the current font family (`document.queryCommandValue('fontName')`)
