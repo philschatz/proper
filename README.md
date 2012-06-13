@@ -6,6 +6,12 @@ PROPER is a Semantic Texteditor based on HTML's `contenteditable` attribute. It'
 The goal is to output proper semantic HTML by restricting the set of possible tags. When pasting content, the markup is stripped.
 
 
+OER Example
+-------------------
+
+For the OER example check out oer.html. You will probably need to include oer.js , stylesheets/oer.css, modify the options sent to the Proper() constructor (see oer.html) and the .activate().
+
+
 Changelog
 -------------------
 
