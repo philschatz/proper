@@ -127,11 +127,20 @@ oer.options = {
         // There are several cases to consider:
         // - Start and End elements are the same
         // - Start and End Elements are different
-        var text = "WHOOPS!";
-        if (sel.startContainer == sel.endContainer) {
-          text = sel.startContainer.data.substring(sel.startOffset, sel.endOffset);
+        if (sel.startContainer != sel.endContainer) {
+          alert("Please select only plain text (not half-way between an emphasis and a new paragraph for example)");
+          return;
         }
+
+        var text = sel.startContainer.data.substring(sel.startOffset, sel.endOffset);
         
+        // This command seems to nicely close all the orphaned elements properly
+        // For example, if the user selects the text between [] below
+        //  "here is some plain text a[nd a <strong>bold ta]g here</strong>"
+        // The browser will correctly stitch up the <strong> tag resulting in
+        //  "here is some plain text a<term>nd a bold ta</term><strong>g here</strong>"
+        // instead of
+        //  "here is some plain text a<term>nd a <strong>bold ta</strong></term><strong>g here</strong>"
         document.execCommand('inserthorizontalrule', false, id);
         var hr = $('.content').find('#' + id);
         
