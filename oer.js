@@ -1,5 +1,5 @@
 (function() {
-  var doWithSelection, oer, restoreSelection, saveSelection, selectAll;
+  var Complex, doWithSelection, oer, restoreSelection, saveSelection, selectAll;
 
   oer = (typeof window !== "undefined" && window !== null) && (window.oer != null) ? window.oer : {};
 
@@ -76,6 +76,46 @@
    Logic for the oer-specific commands
   */
 
+  Complex = (function() {
+
+    function Complex(cls) {
+      this.cls = cls;
+    }
+
+    Complex.prototype.isActive = function() {
+      var end, sel, start;
+      sel = saveSelection();
+      start = sel.startContainer;
+      end = sel.endContainer;
+      return $(start).parents("span." + this.cls).length + $(end).parents("span." + this.cls).length > 0;
+    };
+
+    Complex.prototype.toggleOff = function() {
+      var sel;
+      sel = saveSelection();
+      $(sel.startContainer).parents("span." + this.cls).contents().first().unwrap();
+      return $(sel.endContainer).parents("span." + this.cls).contents().first().unwrap();
+    };
+
+    Complex.prototype.toggleOn = function() {
+      var hr, id, sel, term, text;
+      id = 'unique-id';
+      sel = saveSelection();
+      if (sel.startContainer !== sel.endContainer) {
+        alert("Please select only plain text (not half-way between an emphasis and a new paragraph for example)");
+        return;
+      }
+      text = sel.startContainer.data.substring(sel.startOffset, sel.endOffset);
+      document.execCommand('inserthorizontalrule', false, id);
+      hr = $('.content').find('#' + id);
+      term = $("<span class='" + this.cls + "' style='display: inline;'/>").text(text);
+      return hr.replaceWith(term);
+    };
+
+    return Complex;
+
+  })();
+
   oer.options = {
     allowedTags: {
       span: ['class']
@@ -89,35 +129,10 @@
           return document.execCommand('subscript', false, true);
         }
       },
-      term: {
-        isActive: function() {
-          var end, sel, start;
-          sel = saveSelection();
-          start = sel.startContainer;
-          end = sel.endContainer;
-          return $(start).parents('span.term').length + $(end).parents('span.term').length > 0;
-        },
-        toggleOff: function() {
-          var sel;
-          sel = saveSelection();
-          $(sel.startContainer).parents('span.term').contents().first().unwrap();
-          return $(sel.endContainer).parents('span.term').contents().first().unwrap();
-        },
-        toggleOn: function() {
-          var hr, id, sel, term, text;
-          id = 'unique-id';
-          sel = saveSelection();
-          if (sel.startContainer !== sel.endContainer) {
-            alert("Please select only plain text (not half-way between an emphasis and a new paragraph for example)");
-            return;
-          }
-          text = sel.startContainer.data.substring(sel.startOffset, sel.endOffset);
-          document.execCommand('inserthorizontalrule', false, id);
-          hr = $('.content').find('#' + id);
-          term = $('<span class="term"/>').text(text);
-          return hr.replaceWith(term);
-        }
-      }
+      term: new Complex('term'),
+      note: new Complex('note'),
+      quote: new Complex('quote'),
+      footnote: new Complex('footnote')
     }
   };
 
@@ -130,6 +145,18 @@
       title: 'Term',
       command: 'term',
       shortcut: 'ctrl+shift+t'
+    }, {
+      title: 'Note',
+      command: 'note',
+      shortcut: 'ctrl+shift+n'
+    }, {
+      title: 'Quote',
+      command: 'quote',
+      shortcut: 'ctrl+shift+q'
+    }, {
+      title: 'Footnote',
+      command: 'footnote',
+      shortcut: 'ctrl+shift+f'
     }
   ];
 

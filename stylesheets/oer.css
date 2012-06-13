@@ -1,12 +1,51 @@
+/* For commands without images display the text */
+.proper-commands .command.footnote,
+.proper-commands .command.quote,
+.proper-commands .command.note,
+.proper-commands .command.subscript,
+.proper-commands .command.term {
+  text-indent: 0px;
+}
+
+/* hr { display: inline; } */
+
+
 span.term {
   font-weight: bold;
   border-bottom: 1px dotted black;
 }
 
-.proper-commands .command.subscript {
-  text-indent: 0px;
+/* Inline notes */
+span.note {
+  background-color: #ffffcc;
+}
+span.note::before {
+  content: "Note: ";
+  color: gray;
+  font-weight: bold;
 }
 
-.proper-commands .command.term {
-  text-indent: 0px;
+/* Inline Quotes */
+span.quote {
+  /* border-bottom: 1px dashed gray; */
+}
+span.quote::before,
+span.quote::after {
+  color: lightgray;
+  font-weight: bold;
+  font-size: 150%;
+}
+span.quote::before { content: "\201C" /* open-quote */; }
+span.quote::after  { content: "\201D" /* close-quote; */; }
+
+
+span.footnote {
+  font-size: 66.66%;
+  vertical-align: super;
+}
+span.footnote::before {
+  content: "[#]";
+  color: lightgray;
+  font-size: 150%;
+  vertical-align: sub;
 }
