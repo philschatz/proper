@@ -1,4 +1,12 @@
-.term {
+span.term {
   font-weight: bold;
   border-bottom: 1px dotted black;
+}
+
+.proper-commands .command.subscript {
+  text-indent: 0px;
+}
+
+.proper-commands .command.term {
+  text-indent: 0px;
 }
