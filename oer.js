@@ -123,7 +123,11 @@
     commands: {
       subscript: {
         isActive: function() {
-          return document.queryCommandState('subscript', false, true);
+          var end, sel, start;
+          sel = saveSelection();
+          start = sel.startContainer;
+          end = sel.endContainer;
+          return $(start).parents("sub").length + $(end).parents("sub").length > 0;
         },
         exec: function() {
           return document.execCommand('subscript', false, true);

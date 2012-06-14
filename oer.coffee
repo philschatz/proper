@@ -123,7 +123,15 @@ oer.options =
 
     subscript:
       isActive: () ->
-        document.queryCommandState('subscript', false, true)
+        # document.queryCommandState('subscript', false, true)
+        # queryCommandState isn't good enough because a subscript
+        # could have spans inside it
+        sel = saveSelection()
+        start = sel.startContainer
+        end = sel.endContainer
+        
+        $(start).parents("sub").length + $(end).parents("sub").length > 0
+        
       exec: () ->
         document.execCommand('subscript', false, true)
 
