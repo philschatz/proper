@@ -9,7 +9,7 @@ The goal is to output proper semantic HTML by restricting the set of possible ta
 OER Example
 -------------------
 
-For the OER example check out oer.html. You will probably need to include oer.js , stylesheets/oer.css, modify the options sent to the Proper() constructor (see oer.html) and the .activate().
+For the OER example check out http://philschatz.github.com/proper .
 
 
 Changelog
