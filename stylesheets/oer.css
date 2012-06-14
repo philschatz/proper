@@ -17,7 +17,7 @@ span.term {
 
 /* Inline notes */
 span.note {
-  background-color: #ffffcc;
+  background-color: #ffcccc;
 }
 span.note::before {
   content: "Note: ";
