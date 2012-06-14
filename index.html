@@ -7,11 +7,14 @@
   <link href="stylesheets/page.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="stylesheets/proper.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="stylesheets/oer.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href="lib/annotator.min.css" media="screen" rel="stylesheet" type="text/css" />
+  
   
   <!-- Libraries -->
   <script src="lib/jquery-min.js"></script>
   <script src="lib/jquery.hotkeys.js"></script>
   <script src="lib/underscore.js"></script>
+  <script src="lib/annotator-full.min.js"></script>
     
   <!-- Source -->
   <script src="proper.js"></script>
@@ -20,6 +23,8 @@
   <script>
     // Proper Init
     $(function() {
+
+      $('body').annotator();
 
       window.editor = new Proper(window.oer.options);
       
@@ -62,7 +67,7 @@
     <div class="content">
       <p>Click in here to start editing!</p>
       <p>Text wants to be <strong>editable</strong>.</p>
-      <p>But text also wants to be <strong>meaningful</strong>.</p>
+      <p>But text also wants to be <span class="term">meaningful</span>.</p>
     </div>
   
     <div class="content">
